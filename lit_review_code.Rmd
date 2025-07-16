@@ -22,10 +22,15 @@ process_rayyan<-function(input_bib_file){
   df$CITED_BY=NA
   df$TAGS=NA
   
+  #iterate through each row in dataframe
   for(i in 1:nrow(df)) {
+    #split rayyan column into sections
     rayyan_info<-(df$NOTE[i]|>str_split(pattern=" \\| "))[[1]]
     
+    #extract inclusion tag 
     inclusion<-(rayyan_info[2]|> str_extract_all(boundary("word")))[[1]][4]
+    
+    #extract tags from any other rayyan categories
     category<-rayyan_info[-c(1,2)][1]
     tags=c()
     
@@ -34,14 +39,18 @@ process_rayyan<-function(input_bib_file){
       tags=c(tags,current_tags)
     }
     
+    #extract rayyan metadata
     meta_data<-(rayyan_info[1]|>str_split(pattern = "; "))[[1]]
     export_date<-meta_data[1]|>gsub(pattern = "Export Date: ",replacement="")
     cited_by<-meta_data[2]|>gsub(pattern = "Cited By: ",replacement="")
+    
+    #add all above extracted info to corresponding columns in df
     df$INCLUSION[i]<-inclusion
     df$EXPORT_DATE[i]<-export_date
     df$CITED_BY[i]<-cited_by
     df$TAGS[i]<-list(tags)
   }
+  #return final df
   return(df)
 }
 ```
@@ -57,6 +66,7 @@ table(scop_26_6_first_pass$INCLUSION)|>barplot()
 
 
 ```{r}
+#create master df that will be updated with every stage of decisions etc
 master_db<-scop_26_6_first_pass
 ```
 
