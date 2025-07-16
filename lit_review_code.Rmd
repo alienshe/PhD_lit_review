@@ -46,18 +46,45 @@ process_rayyan<-function(input_bib_file){
 }
 ```
 
+
 ```{r}
 #reading in inital batch of papers screened w/rayyan
 scop_26_6_first_pass<-process_rayyan("data/post_first_pass_scopus_26_6_25.bib")
 scop_26_6_first_pass
 table(scop_26_6_first_pass$INCLUSION)|>barplot()
 
+```
+
+
+```{r}
+master_db<-scop_26_6_first_pass
+```
+
+
+```{r}
 #selecting papers that have been marked as "unclear method" so I can review the method sections in zotero
 scop_26_6_first_pass|>filter(grepl("unclear method",TAGS))
 unclear_method_rows<-(scop_26_6_first_pass|>rowwise()|>summarise(bool= "unclear method" %in% TAGS))$bool
 unclear_method_papers<-scop_26_6_first_pass[unclear_method_rows,]
-unclear_method_papers|>df2bib(file="unclear_method_papers.bib")
+#unclear_method_papers|>df2bib(file="unclear_method_papers.bib")
 
+#after review in zotero, read in separate categories
+
+include_unclear_method<-bib2df("data/unclear_method_papers/decisions/unclear_method_include.bib")
+exclude_unclear_method<-bib2df("data/unclear_method_papers/decisions/unclear_method_exclude.bib")
+single_fungus_unclear_method<-bib2df("data/unclear_method_papers/decisions/unclear_method_single_fungus.bib")
+
+#change inclusion of these papers in the master database
+master_db[(master_db$URL %in% include_unclear_method$URL),]$INCLUSION<-"Include"
+master_db[(master_db$URL %in% exclude_unclear_method$URL),]$INCLUSION<-"Exclude"
+
+
+#add "single fungus" tag
+#only has one record so I can cheat (idk how to do this properly)
+new_tags<-list(c("unclear method","single fungus"))
+master_db[(master_db$URL %in% single_fungus_unclear_method$URL),]$TAGS[1]<-new_tags
 
 ```
+```{r}
 
+```
