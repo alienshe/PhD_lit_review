@@ -1,0 +1,63 @@
+---
+title: "lit review things"
+author: "Sylvie"
+date: "2025-07-14"
+output: html_document
+---
+
+```{r}
+library(bib2df)
+library(stringr)
+```
+
+```{r}
+process_rayyan<-function(input_bib_file){
+  #this function takes a .bib file exported from rayyan (all papers have to have an exclusion decision) and outputs a dataframe 
+  
+  #read in bib and add columns
+  raw_df<-bib2df(input_bib_file)
+  df<-raw_df
+  df$INCLUSION=NA
+  df$EXPORT_DATE=NA
+  df$CITED_BY=NA
+  df$TAGS=NA
+  
+  for(i in 1:nrow(df)) {
+    rayyan_info<-(df$NOTE[i]|>str_split(pattern=" \\| "))[[1]]
+    
+    inclusion<-(rayyan_info[2]|> str_extract_all(boundary("word")))[[1]][4]
+    category<-rayyan_info[-c(1,2)][1]
+    tags=c()
+    
+    for (category in rayyan_info[-c(1,2)]){
+      current_tags<-(category|>gsub(pattern=".*: ",replacement="")|>str_split(pattern=","))[[1]]
+      tags=c(tags,current_tags)
+    }
+    
+    meta_data<-(rayyan_info[1]|>str_split(pattern = "; "))[[1]]
+    export_date<-meta_data[1]|>gsub(pattern = "Export Date: ",replacement="")
+    cited_by<-meta_data[2]|>gsub(pattern = "Cited By: ",replacement="")
+    df$INCLUSION[i]<-inclusion
+    df$EXPORT_DATE[i]<-export_date
+    df$CITED_BY[i]<-cited_by
+    df$TAGS[i]<-list(tags)
+  }
+  return(df)
+}
+```
+
+```{r}
+#reading in inital batch of papers screened w/rayyan
+scop_26_6_first_pass<-process_rayyan("data/post_first_pass_scopus_26_6_25.bib")
+scop_26_6_first_pass
+table(scop_26_6_first_pass$INCLUSION)|>barplot()
+
+#selecting papers that have been marked as "unclear method" so I can review the method sections in zotero
+scop_26_6_first_pass|>filter(grepl("unclear method",TAGS))
+unclear_method_rows<-(scop_26_6_first_pass|>rowwise()|>summarise(bool= "unclear method" %in% TAGS))$bool
+unclear_method_papers<-scop_26_6_first_pass[unclear_method_rows,]
+unclear_method_papers|>df2bib(file="unclear_method_papers.bib")
+
+
+```
+
