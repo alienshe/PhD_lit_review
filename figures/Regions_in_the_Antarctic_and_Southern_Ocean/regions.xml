@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<DIF xmlns="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" xmlns:dif="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/ http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/dif_v9.9.3.xsd">
+  <Entry_ID>regions</Entry_ID>
+  <Entry_Title>Regions used by the Australian Antarctic Data Centre</Entry_Title>
+  <Data_Set_Citation>
+    <Dataset_Creator>Harris, U.</Dataset_Creator>
+    <Dataset_Title>Regions used by the Australian Antarctic Data Centre</Dataset_Title>
+    <Dataset_Series_Name>CAASM Metadata</Dataset_Series_Name>
+    <Dataset_Release_Date>2009-05-06</Dataset_Release_Date>
+    <Dataset_Publisher>Australian Antarctic Data Centre</Dataset_Publisher>
+    <Version>1</Version>
+    <Online_Resource>https://data.aad.gov.au/metadata/regions</Online_Resource>
+  </Data_Set_Citation>
+  <Personnel>
+    <Role>INVESTIGATOR</Role>
+    <Role>TECHNICAL CONTACT</Role>
+    <Role>DIF AUTHOR</Role>
+    <First_Name>URSULA</First_Name>
+    <Last_Name>HARRIS</Last_Name>
+    <Email>gis@aad.gov.au</Email>
+    <Phone>+61 3 6232 3519</Phone>
+    <Fax>+61 3 6232 3351</Fax>
+    <Contact_Address>
+      <Address>Australian Antarctic Division</Address>
+      <Address>203 Channel Highway</Address>
+      <City>Kingston</City>
+      <Province_or_State>Tasmania</Province_or_State>
+      <Postal_Code>7050</Postal_Code>
+      <Country>Australia</Country>
+    </Contact_Address>
+  </Personnel>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>HUMAN DIMENSIONS</Topic>
+    <Term>BOUNDARIES</Term>
+  </Parameters>
+  <ISO_Topic_Category>BOUNDARIES</ISO_Topic_Category>
+  <Keyword>regions</Keyword>
+  <Keyword>areas</Keyword>
+  <Sensor_Name>
+    <Short_Name>SURVEYING TOOLS</Short_Name>
+  </Sensor_Name>
+  <Source_Name>
+    <Short_Name>MAPS</Short_Name>
+  </Source_Name>
+  <Temporal_Coverage>
+    <Start_Date>2009-05-06</Start_Date>
+  </Temporal_Coverage>
+  <Data_Set_Progress>COMPLETE</Data_Set_Progress>
+  <Spatial_Coverage>
+    <Southernmost_Latitude>-90</Southernmost_Latitude>
+    <Northernmost_Latitude>-30</Northernmost_Latitude>
+    <Westernmost_Longitude>-180</Westernmost_Longitude>
+    <Easternmost_Longitude>180</Easternmost_Longitude>
+    <Minimum_Depth>0 Metres</Minimum_Depth>
+    <Maximum_Depth>16 Metres</Maximum_Depth>
+  </Spatial_Coverage>
+  <Location>
+    <Location_Category>OCEAN</Location_Category>
+    <Location_Type>SOUTHERN OCEAN</Location_Type>
+  </Location>
+  <Location>
+    <Location_Category>CONTINENT</Location_Category>
+    <Location_Type>ANTARCTICA</Location_Type>
+  </Location>
+  <Location>
+    <Location_Category>GEOGRAPHIC REGION</Location_Category>
+    <Location_Type>POLAR</Location_Type>
+  </Location>
+  <Quality>The values provided in temporal and spatial coverage are approximate only.</Quality>
+  <Access_Constraints>The region data is stored in ESRI shapefile format and are publicly available for download from the provided URL.</Access_Constraints>
+  <Use_Constraints>This data set conforms to the CCBY Attribution License (http://creativecommons.org/licenses/by/4.0/). 
+
+Please follow instructions listed in the citation reference provided at http://data.aad.gov.au/aadc/metadata/citation.cfm?entry_id=regions when using these data.</Use_Constraints>
+  <Data_Set_Language>English</Data_Set_Language>
+  <Originating_Center>Australian Antarctic Division</Originating_Center>
+  <Data_Center>
+    <Data_Center_Name>
+      <Short_Name>AU/AADC</Short_Name>
+      <Long_Name>Australian Antarctic Data Centre, Australia</Long_Name>
+    </Data_Center_Name>
+    <Data_Center_URL>http://data.aad.gov.au</Data_Center_URL>
+    <Personnel>
+      <Role>DATA CENTER CONTACT</Role>
+      <First_Name>DATA OFFICER</First_Name>
+      <Last_Name>AADC</Last_Name>
+      <Email>metadata@aad.gov.au</Email>
+      <Phone>+61 3 6232 3244</Phone>
+      <Fax>+61 3 6232 3351</Fax>
+      <Contact_Address>
+        <Address>Australian Antarctic Division</Address>
+        <Address>203 Channel Highway</Address>
+        <City>Kingston</City>
+        <Province_or_State>Tasmania</Province_or_State>
+        <Postal_Code>7050</Postal_Code>
+        <Country>Australia</Country>
+      </Contact_Address>
+    </Personnel>
+  </Data_Center>
+  <Distribution>
+    <Distribution_Media>HTTP</Distribution_Media>
+    <Distribution_Size>263 KB</Distribution_Size>
+    <Distribution_Format>shapefiles</Distribution_Format>
+    <Fees>Free</Fees>
+  </Distribution>
+  <Summary>
+    <Abstract>The regions dataset holds polygon data. The polygons are overlapping and suitable for use at multiple scales. The data include regions as large as the Southern Ocean, Australia's limit of the Southern Ocean, and AAT West. It also includes small areas such as Mawson Coast, Rauer Group and Bunger Hills. Extents for each region are defined in the attribute table.
+
+The data were captured so that online applications, such as the Map Catalogue and Data Navigator, could use region information consistently.
+
+The data are stored in geographicals, i.e. unprojected. The data include an attribute PROJECTION which stores the suggested projection for a region in code. The code represents projections used by Oracle.</Abstract>
+  </Summary>
+  <Related_URL>
+    <URL_Content_Type>
+      <Type>GET DATA</Type>
+    </URL_Content_Type>
+    <URL>https://data.aad.gov.au/eds/2162/download</URL>
+    <Description>Access to data is via a registered zip file containing one shapefile</Description>
+  </Related_URL>
+  <Related_URL>
+    <URL_Content_Type>
+      <Type>VIEW RELATED INFORMATION</Type>
+    </URL_Content_Type>
+    <URL>http://data.aad.gov.au/aadc/metadata/citation.cfm?entry_id=regions</URL>
+    <Description>Citation reference for this metadata record and dataset</Description>
+  </Related_URL>
+  <IDN_Node>
+    <Short_Name>AMD/AU</Short_Name>
+  </IDN_Node>
+  <IDN_Node>
+    <Short_Name>CEOS</Short_Name>
+  </IDN_Node>
+  <IDN_Node>
+    <Short_Name>AMD</Short_Name>
+  </IDN_Node>
+  <Originating_Metadata_Node>AADC</Originating_Metadata_Node>
+  <Metadata_Name>CEOS IDN DIF</Metadata_Name>
+  <Metadata_Version>VERSION 9.9.3</Metadata_Version>
+  <DIF_Creation_Date>2009-05-05</DIF_Creation_Date>
+  <Last_DIF_Revision_Date>2019-04-09</Last_DIF_Revision_Date>
+  <DIF_Revision_History>2009-05-05 - record created by Ursula Harris. 
+2019-04-09 - record updated by Dave Connell for ISO compliance.</DIF_Revision_History>
+  <Extended_Metadata>
+    <Metadata>
+      <Group>gov.nasa.gsfc.gcmd</Group>
+      <Name>metadata.uuid</Name>
+      <Value>e8b829c3-5042-4126-8bdc-43fdb40d9290</Value>
+    </Metadata>
+    <Metadata>
+      <Group>gov.nasa.gsfc.gcmd</Group>
+      <Name>metadata.extraction_date</Name>
+      <Value>2019-04-09 16:27:45</Value>
+    </Metadata>
+    <Metadata>
+      <Group>gov.nasa.gsfc.gcmd</Group>
+      <Name>metadata.keyword_version</Name>
+      <Value>8.6</Value>
+    </Metadata>
+  </Extended_Metadata>
+</DIF>

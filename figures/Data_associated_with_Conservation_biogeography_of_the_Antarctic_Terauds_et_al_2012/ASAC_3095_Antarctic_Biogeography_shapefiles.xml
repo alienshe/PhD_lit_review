@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DIF xmlns="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" xmlns:dif="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/ https://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/dif_v9.9.3.xsd">
+  <Entry_ID>ASAC_3095_Antarctic_Biogeography_shapefiles</Entry_ID>
+  <Entry_Title>Conservation Biogeography of the Antarctic - Shapefiles</Entry_Title>
+  <Data_Set_Citation>
+    <Dataset_Creator>Terauds, A.</Dataset_Creator>
+    <Dataset_Title>Conservation Biogeography of the Antarctic - Shapefiles</Dataset_Title>
+    <Dataset_Series_Name>CAASM Metadata</Dataset_Series_Name>
+    <Dataset_Release_Date>2012-05-10</Dataset_Release_Date>
+    <Dataset_Publisher>Australian Antarctic Data Centre</Dataset_Publisher>
+    <Version>1</Version>
+    <Dataset_DOI>doi:10.4225/15/54AF512520027</Dataset_DOI>
+    <Online_Resource>https://data.aad.gov.au/metadata/records/ASAC_3095_Antarctic_Biogeography_shapefiles</Online_Resource>
+  </Data_Set_Citation>
+  <Personnel>
+    <Role>INVESTIGATOR</Role>
+    <Role>TECHNICAL CONTACT</Role>
+    <Role>DIF AUTHOR</Role>
+    <First_Name>ALEKS</First_Name>
+    <Last_Name>TERAUDS</Last_Name>
+    <Email>aleks.terauds@aad.gov.au</Email>
+    <Email>aleks.terauds@gmail.com</Email>
+    <Phone>+61 3 6232 3339</Phone>
+    <Contact_Address>
+      <Address>Australian Antarctic Division</Address>
+      <Address>203 Channel Highway</Address>
+      <City>Kingston</City>
+      <Province_or_State>Tasmania</Province_or_State>
+      <Postal_Code>7050</Postal_Code>
+      <Country>Australia</Country>
+    </Contact_Address>
+  </Personnel>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>BIOSPHERE</Topic>
+    <Term>TERRESTRIAL ECOSYSTEMS</Term>
+  </Parameters>
+  <Parameters>
+    <Category>EARTH SCIENCE</Category>
+    <Topic>BIOSPHERE</Topic>
+    <Term>ECOLOGICAL DYNAMICS</Term>
+    <Variable_Level_1>COMMUNITY DYNAMICS</Variable_Level_1>
+    <Variable_Level_2>COMMUNITY STRUCTURE</Variable_Level_2>
+  </Parameters>
+  <ISO_Topic_Category>BIOTA</ISO_Topic_Category>
+  <Keyword>RISCC</Keyword>
+  <Keyword>Bioregions</Keyword>
+  <Temporal_Coverage>
+    <Start_Date>2010-01-01</Start_Date>
+    <Stop_Date>2012-02-01</Stop_Date>
+  </Temporal_Coverage>
+  <Data_Set_Progress>COMPLETE</Data_Set_Progress>
+  <Spatial_Coverage>
+    <Southernmost_Latitude>-90.0</Southernmost_Latitude>
+    <Northernmost_Latitude>-47.0</Northernmost_Latitude>
+    <Westernmost_Longitude>-180.0</Westernmost_Longitude>
+    <Easternmost_Longitude>180.0</Easternmost_Longitude>
+  </Spatial_Coverage>
+  <Location>
+    <Location_Category>CONTINENT</Location_Category>
+    <Location_Type>ANTARCTICA</Location_Type>
+  </Location>
+  <Location>
+    <Location_Category>GEOGRAPHIC REGION</Location_Category>
+    <Location_Type>POLAR</Location_Type>
+  </Location>
+  <Access_Constraints>These data are publicly available for download from the provided URL.  NOTE - the shapefile representing Antarctic Conservation Biogeographic Regions (ACBRs) available from this record 
+has been superseded by the shapefile representing ACBRs available from "AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2" (see the provided URL) (2018-02-08).</Access_Constraints>
+  <Use_Constraints>This data set conforms to the CCBY Attribution License (http://creativecommons.org/licenses/by/4.0/).
+
+Please follow instructions listed in the citation reference provided at http://data.aad.gov.au/aadc/metadata/citation.cfm?entry_id=ASAC_3095_Antarctic_Biogeography_shapefiles when using these data.</Use_Constraints>
+  <Data_Set_Language>ENGLISH</Data_Set_Language>
+  <Originating_Center>Australian Antarctic Division</Originating_Center>
+  <Data_Center>
+    <Data_Center_Name>
+      <Short_Name>AU/AADC</Short_Name>
+      <Long_Name>Australian Antarctic Data Centre, Australia</Long_Name>
+    </Data_Center_Name>
+    <Data_Center_URL>http://data.aad.gov.au</Data_Center_URL>
+    <Personnel>
+      <Role>DATA CENTER CONTACT</Role>
+      <First_Name>DATA OFFICER</First_Name>
+      <Last_Name>AADC</Last_Name>
+      <Email>metadata@aad.gov.au</Email>
+      <Phone>+61 3 6232 3244</Phone>
+      <Fax>+61 3 6232 3351</Fax>
+      <Contact_Address>
+        <Address>Australian Antarctic Division</Address>
+        <Address>203 Channel Highway</Address>
+        <City>Kingston</City>
+        <Province_or_State>Tasmania</Province_or_State>
+        <Postal_Code>7050</Postal_Code>
+        <Country>Australia</Country>
+      </Contact_Address>
+    </Personnel>
+  </Data_Center>
+  <Distribution>
+    <Distribution_Media>HTTP</Distribution_Media>
+    <Distribution_Size>18.4 MB</Distribution_Size>
+    <Distribution_Format>shapefiles</Distribution_Format>
+    <Fees>Free</Fees>
+  </Distribution>
+  <Reference>
+    <Author>Terauds A, Chown SL, Morgan F, Peat H, Watts D, Keys H, Convey P and Bergstrom DM</Author>
+    <Publication_Date>2012</Publication_Date>
+    <Title>Conservation biogeography of the Antarctic.</Title>
+    <Series>Diversity and Distributions</Series>
+    <Other_Reference_Details>Submitted to Diversity and Distributions Feb 2012</Other_Reference_Details>
+  </Reference>
+  <Summary>
+    <Abstract>NOTE - the shapefile representing Antarctic Conservation Biogeographic Regions (ACBRs) available from this record 
+has been superseded by the shapefile representing ACBRs available from "AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2" (see the provided URL) (2018-02-08).
+    
+In association with the Scientific Committee for Antarctic Research, Aleks Terauds (Australian Antarctic Division) and Steven Chown (Stellenbosch University, Monash University from July 2012) have been leading research into biogeographical classification of terrestrial Antarctica. This research culminated in the manuscript 'Conservation biogeography of the Antarctic', full citation:
+
+Terauds, A., Chown, S.L., Convey, P., Peat, H., Watts, D., Morgan, F., Keys, H. and Bergstrom, D.M. (2012) Conservation biogeography of the Antarctic. Diversity and Distributions. In press.
+
+The primary finding of this paper was that terrestrial Antarctica could be classified into 15 biologically distinct regions or Antarctic Conservation Biogeographic Regions. A shapefile of the polygons representing these ice free regions is available for download. The layer is based on the most up to date map of ice-free areas of Antarctica (from the Antarctic Digital Database v5 copyright SCAR 1993-2006). Therefore use of this shapefile in analyses is subject to the copyright restrictions of SCAR and interested parties can also contact Aleks.Terauds@aad.gov.au with any questions. Other shapefiles provided here are the expert-defined bioregions (one of the spatial frameworks used in the analyses of Terauds et al. 2012) and the ASPA/ASMA point and polygon shapefiles. A separate PDF is included in the folder containing the ASPA/ASMA shapefiles with terms of use.</Abstract>
+    <Purpose>The purpose of the dataset is to provide the shapefiles used in, and resulting from, the biogeographic analyses undertaken in Terauds A, Chown SL, Morgan F, Peat H, Watts D, Keys H, Convey P and Bergstrom DM (2012) Conservation biogeography of the Antarctic. In particular, the shapefile representing Antarctic Biogeographic Areas should prove useful to managers and other Antarctic researchers in delineating biologically distinct areas of Antarctica.</Purpose>
+  </Summary>
+  <Related_URL>
+    <URL_Content_Type>
+      <Type>GET DATA</Type>
+    </URL_Content_Type>
+    <URL>http://data.aad.gov.au/aadc/portal/download_file.cfm?file_id=3502</URL>
+    <Description>Download point for the shapefiles</Description>
+  </Related_URL>
+  <Related_URL>
+    <!--Modified by Change List Tool on Tue Jul 10 13:39:07 EDT 2018. Old value is "GET RELATED DATA SET METADATA (DIF)"-->
+<URL_Content_Type>
+      <Type>EXTENDED METADATA</Type>
+    </URL_Content_Type>
+    <URL>http://data.aad.gov.au/metadata/records/AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2 </URL>
+    <Description>See the record with the more recent dataset</Description>
+  </Related_URL>
+  <Related_URL>
+    <!--Modified by Change List Tool on Tue Jul 10 13:39:07 EDT 2018. Old value is "VIEW PROJECT HOME PAGE"-->
+<URL_Content_Type>
+      <Type>PROJECT HOME PAGE</Type>
+    </URL_Content_Type>
+    <URL>https://secure3.aad.gov.au/proms/public/projects/report_project_public.cfm?project_no=3095</URL>
+    <Description>Public information for ASAC project 3095</Description>
+  </Related_URL>
+  <Related_URL>
+    <URL_Content_Type>
+      <Type>VIEW RELATED INFORMATION</Type>
+    </URL_Content_Type>
+    <URL>http://data.aad.gov.au/aadc/metadata/citation.cfm?entry_id=ASAC_3095_Antarctic_Biogeography_shapefiles</URL>
+    <Description>Citation reference for this metadata record and dataset</Description>
+  </Related_URL>
+  <Parent_DIF>ASAC_3095</Parent_DIF>
+  <IDN_Node>
+    <Short_Name>AMD/AU</Short_Name>
+  </IDN_Node>
+  <IDN_Node>
+    <Short_Name>CEOS</Short_Name>
+  </IDN_Node>
+  <IDN_Node>
+    <Short_Name>AMD</Short_Name>
+  </IDN_Node>
+  <Originating_Metadata_Node>AADC</Originating_Metadata_Node>
+  <Metadata_Name>CEOS IDN DIF</Metadata_Name>
+  <Metadata_Version>VERSION 9.9.3</Metadata_Version>
+  <DIF_Creation_Date>2012-01-29</DIF_Creation_Date>
+  <Last_DIF_Revision_Date>2018-02-08</Last_DIF_Revision_Date>
+  <DIF_Revision_History>2012-01-30 - record created by Aleks Terauds.
+2012-05-11 - record updated by Dave Connell after new data were supplied by Aleks.
+2012-10-22 - record updated by Dave Connell to alter the access constraints.
+2015-01-09 - record updated by Dave Connell to add a dataset DOI.
+2016-09-22 - record updated by Dave Connell - basic updates.
+2018-02-08 - record updated by Dave Connell at the request of David Smith.</DIF_Revision_History>
+  <Extended_Metadata>
+    <Metadata>
+      <Group>gov.nasa.gsfc.gcmd</Group>
+      <Name>metadata.uuid</Name>
+      <Value>fe8d4b3e-c306-4b60-8ef4-39291f4db594</Value>
+    </Metadata>
+    <Metadata>
+      <Group>gov.nasa.gsfc.gcmd</Group>
+      <Name>metadata.extraction_date</Name>
+      <Value>2015-11-30 04:55:48</Value>
+    </Metadata>
+    <Metadata>
+      <Group>gov.nasa.gsfc.gcmd</Group>
+      <Name>metadata.keyword_version</Name>
+      <Value>8.6</Value>
+    </Metadata>
+  </Extended_Metadata>
+</DIF>

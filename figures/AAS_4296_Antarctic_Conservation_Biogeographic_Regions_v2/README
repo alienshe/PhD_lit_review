@@ -1,0 +1,28 @@
+Title: An update of the Antarctic Conservation Biogeographic Regions (ACBRs)
+
+Authors:
+  - ALEKS TERAUDS (INVESTIGATOR, TECHNICAL CONTACT, DIF AUTHOR)
+
+Owner: Commonwealth of Australia
+
+Citation: Terauds, A. (2016) An update of the Antarctic Conservation Biogeographic Regions (ACBRs), Ver. 1,  <em>Australian Antarctic Data Centre</em> - <a href="http://dx.doi.org/doi:10.4225/15/5729930925224">doi:10.4225/15/5729930925224</a>, Accessed: 2020-07-02
+
+Revision Date: 2017-04-26
+
+Metadata URL: https://data.aad.gov.au/metadata/records/AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2
+
+Dataset API URL: https://data.aad.gov.au/s3/api/bucket/datasets/science/AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2?export=json
+
+Abstract: Here we provide a revised version of the ACBRs, reflecting updates in underlying spatial layers, together with the results of new analysis justifying the inclusion of a 16th bioregion. This updated version now covers all ice-free areas of Antarctica.
+
+Use Constraints: This dataset is freely available for use with the following citation:
+
+Terauds, A. and Lee, J.R. (2016) Antarctic biogeography revisited: Updating the Antarctic Conservation Biogeographic Regions. Diversity and Distributions.
+
+This data set conforms to the CCBY Attribution License (http://creativecommons.org/licenses/by/4.0/).
+
+Please follow instructions listed in the citation reference provided at http://data.aad.gov.au/aadc/metadata/citation.cfm?entry_id=AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2 when using these data.
+
+ID: 4339
+Metadata ID: AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2
+UUID: 949965A4-6918-4B6E-92EA-AF09929C3503

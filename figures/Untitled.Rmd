@@ -1,0 +1,162 @@
+---
+title: "long lat figures lit review"
+output: html_document
+date: "2026-01-13"
+---
+```{r}
+library(gsheet)
+library(tidyverse)
+
+```
+```{r}
+library(tidyverse)
+library(ggspatial)
+library(sf)
+library(rnaturalearth) # map data
+library(rnaturalearthdata)# map data
+library(giscoR)
+library(ggrepel)
+library(rmapshaper)
+library(celestial)
+library(geosphere)
+```
+
+```{r}
+url<-construct_download_url("https://docs.google.com/spreadsheets/d/1kUt2Z7xGvePlBPR9qzLLC4ZrfZd-t4GcO0Qit9ym-IY/edit?usp=sharing", format="csv", sheetid=1374399622)
+
+lit_rev_data<-gsheet2tbl(url)
+save(lit_rev_data,file="lit_rev_data.Rda")
+```
+
+```{r}
+lit_rev_data|>colnames()
+```
+# Investigating the data to choose points
+
+within each study, I kept one point from each cluster of points that were within ~100 km. Some discretion was used depending on the nature of the clustering and the precision of the input (varies greatly from study to study, some coordinates had to be approximated from broad place names or maps)
+```{r}
+lat_long_data_raw<-lit_rev_data[,c("Lat_d","Lat_m","Lat_s","Lat_dir","Long_d","Long_m","Long_s","Long_dir","which points to keep")]
+
+
+i=120
+```
+```{r}
+#for(i in dim(lat_long_data_raw)[1]){
+  a_d<-(lat_long_data_raw$Lat_d[i]|>str_split("\n"))[[1]]|>as.numeric()
+  a_m<-(lat_long_data_raw$Lat_m[i]|>str_split("\n"))[[1]]|>as.numeric()
+  a_s<-(lat_long_data_raw$Lat_s[i]|>str_split("\n"))[[1]]|>as.numeric()
+  a_dir<-(lat_long_data_raw$Lat_dir[i])
+  if(!(is.na(a_dir))){
+    if(!(a_dir=="N" | a_dir=="S")){
+     print(paste("error: lat direction is",a_dir))
+     break
+    }
+    if(a_dir=="S"){
+    a_d=-a_d
+    a_m=-a_m
+    a_s=-a_s
+    }
+    
+  }
+  
+  a_dd<-a_d
+  if(all(!(is.na(a_m)))){
+    a_dd<-a_dd+a_m/60
+  }
+  if(all(!(is.na(a_s)))){
+    a_dd<-a_dd+a_s/3600
+  }
+  
+  a_dd
+  
+  
+  o_d<-(lat_long_data_raw$Long_d[i]|>str_split("\n"))[[1]]|>as.numeric()
+  o_m<-(lat_long_data_raw$Long_m[i]|>str_split("\n"))[[1]]|>as.numeric()
+  o_s<-(lat_long_data_raw$Long_s[i]|>str_split("\n"))[[1]]|>as.numeric()
+  o_dir<-(lat_long_data_raw$Long_dir[i])
+  if(!(is.na(o_dir))){
+    if(!(o_dir=="E" | o_dir=="W")){
+     print(paste("error: long direction is",o_dir))
+     break
+    }
+    if(o_dir=="W"){
+    o_d=-o_d
+    o_m=-o_m
+    o_s=-o_s
+    }
+    
+  }
+  
+  o_dd<-o_d
+  if(all(!(is.na(o_m)))){
+    o_dd<-o_dd+o_m/60
+  }
+  if(all(!(is.na(o_s)))){
+    o_dd<-o_dd+o_s/3600
+  }
+  
+ 
+  
+  
+#}
+
+#ylim = c(min(o_dd), min(o_dd)+100),xlim = c(min(a_dd),min(a_dd)+100)
+
+plot(o_dd,a_dd)
+text(o_dd,a_dd,labels=(1:length(a_dd)),pos=4)
+
+coords<-data.frame("lat"=a_dd, "long"=o_dd,"labels"=c(1:length(o_dd)))
+
+
+
+
+world <- ne_countries(scale="medium", returnclass = "sf")
+ggplot(data = world) +
+  geom_sf()  +
+  annotation_scale(location = "bl", width_hint = 0.4)+
+  geom_point(data=coords,aes(o_dd,a_dd))+
+  geom_label_repel(data=coords, aes(label=labels,x=o_dd,y=a_dd),size=2,max.overlaps = 50)
+    
+# antarct <- gisco_get_countries(year = 2024, resolution = 1, country = "ATA") %>%
+#   select(NAME = NAME_ENGL) |>
+#   # Ortho proj centered in the South Pole
+#   st_transform(crs = "+proj=ortho +lat_0=-90 +lon_0=0")
+# ggplot(antarct) +
+#   geom_sf(fill = "lightblue")+
+#   geom_point(data=coords,aes(x=o_dd,y=a_dd,label=labels),check_overla)
+```
+```{r}
+distm(c(62.8730,-67.6027),c(55.8,-67.6),fun=distHaversine)/1000
+```
+
+# Actually ingesting the data
+now that I have created a "which points to keep " column based on the plots produced above I can use that to filter the data and put it into a usable format
+```{r}
+
+i=1
+j=2
+points_to_keep<-lat_long_data_raw$`which points to keep`
+
+for(i in 1:length(o_dd)){
+  lat_1<-a_dd[i]
+  long_1<-o_dd[i]
+  
+      
+      
+      
+    }
+    
+  }
+  
+  
+}
+```
+
+```{r}
+
+
+
+
+```
+
+

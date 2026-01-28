@@ -8,8 +8,8 @@ output: html_document
 ```{r}
 library(bib2df)
 library(stringr)
-library(synthesisr)
 library(tidyverse)
+
 ```
 
 ```{r}
@@ -65,10 +65,6 @@ scop_26_6_first_pass
 table(scop_26_6_first_pass$INCLUSION)|>barplot()
 
 ```
-```{r}
-scop_included_papers<-scop_26_6_first_pass[(scop_26_6_first_pass$INCLUSION == "Included"),]
-df2bib(scop_included_papers,file="data/")
-```
 
 
 ```{r}
@@ -107,34 +103,6 @@ single_fungus_papers
 ```
 ```{r}
 master_db[master_db$INCLUSION=="Included",]$YEAR|>table()|>barplot()
-
+master_db$INCLUSION
 ```
-
-
-web of science search
-```{r}
-wos_raw<-bib2df("data/wos_24_7.bib",merge_lines = TRUE)
-```
-```{r}
-wos_deduped<-wos_raw
-#entries with the same DOI
-wos_duplicate_DOI<-(wos_raw$DOI %in% master_db$DOI & !is.na(wos_raw$DOI))
-wos_deduped<-wos_deduped[!wos_duplicate_DOI,]
-no_doi_master<-master_db[is.na(master_db$DOI),]
-
-#entries w same title
-dup<-find_duplicates(c(wos_deduped$TITLE, no_doi_master$TITLE),method="exact",to_lower = TRUE, rm_punctuation = TRUE )
-dup_bool<-duplicated(dup,fromLast = TRUE,)
-wos_duplicated_titles_bool<-dup_bool[1:(length(wos_deduped$TITLE))]
-
-wos_deduped<-wos_deduped[!wos_duplicated_titles_bool,]
-```
-
-```{r}
-
-#df2bib(wos_deduped,file="data/wos_deduped_unsorted.bib")
-#write_refs(read_refs("data/wos_deduped_unsorted.bib")[1:20,], format = "ris",file="data/wos_deduped_unsorted_little_bit.ris")
-```
-
-
 

@@ -1,0 +1,31 @@
+Title: Conservation Biogeography of the Antarctic - Shapefiles
+
+Authors:
+  - ALEKS TERAUDS (INVESTIGATOR, TECHNICAL CONTACT, DIF AUTHOR)
+
+Owner: Commonwealth of Australia
+
+Citation: Terauds, A. (2012) Conservation Biogeography of the Antarctic - Shapefiles, Ver. 1,  <em>Australian Antarctic Data Centre</em> - <a href="http://dx.doi.org/doi:10.4225/15/54AF512520027">doi:10.4225/15/54AF512520027</a>, Accessed: 2020-07-02
+
+Revision Date: 2018-02-08
+
+Metadata URL: https://data.aad.gov.au/metadata/records/ASAC_3095_Antarctic_Biogeography_shapefiles
+
+Dataset API URL: https://data.aad.gov.au/s3/api/bucket/datasets/science/ASAC_3095_Antarctic_Biogeography_shapefiles?export=json
+
+Abstract: NOTE - the shapefile representing Antarctic Conservation Biogeographic Regions (ACBRs) available from this record 
+has been superseded by the shapefile representing ACBRs available from "AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2" (see the provided URL) (2018-02-08).
+    
+In association with the Scientific Committee for Antarctic Research, Aleks Terauds (Australian Antarctic Division) and Steven Chown (Stellenbosch University, Monash University from July 2012) have been leading research into biogeographical classification of terrestrial Antarctica. This research culminated in the manuscript 'Conservation biogeography of the Antarctic', full citation:
+
+Terauds, A., Chown, S.L., Convey, P., Peat, H., Watts, D., Morgan, F., Keys, H. and Bergstrom, D.M. (2012) Conservation biogeography of the Antarctic. Diversity and Distributions. In press.
+
+The primary finding of this paper was that terrestrial Antarctica could be classified into 15 biologically distinct regions or Antarctic Conservation Biogeographic Regions. A shapefile of the polygons representing these ice free regions is available for download. The layer is based on the most up to date map of ice-free areas of Antarctica (from the Antarctic Digital Database v5 copyright SCAR 1993-2006). Therefore use of this shapefile in analyses is subject to the copyright restrictions of SCAR and interested parties can also contact Aleks.Terauds@aad.gov.au with any questions. Other shapefiles provided here are the expert-defined bioregions (one of the spatial frameworks used in the analyses of Terauds et al. 2012) and the ASPA/ASMA point and polygon shapefiles. A separate PDF is included in the folder containing the ASPA/ASMA shapefiles with terms of use.
+
+Use Constraints: This data set conforms to the CCBY Attribution License (http://creativecommons.org/licenses/by/4.0/).
+
+Please follow instructions listed in the citation reference provided at http://data.aad.gov.au/aadc/metadata/citation.cfm?entry_id=ASAC_3095_Antarctic_Biogeography_shapefiles when using these data.
+
+ID: 3272
+Metadata ID: ASAC_3095_Antarctic_Biogeography_shapefiles
+UUID: 6825D031-0752-4F8E-82E4-F4DC3A88C6D6

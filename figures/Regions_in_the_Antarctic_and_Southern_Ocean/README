@@ -1,0 +1,26 @@
+Title: Regions used by the Australian Antarctic Data Centre
+
+    Authors:
+    - URSULA HARRIS (INVESTIGATOR, TECHNICAL CONTACT, DIF AUTHOR)
+
+    Owner: Commonwealth of Australia
+
+    Citation: Harris, U. (2009) Regions used by the Australian Antarctic Data Centre, Ver. 1,  <em>Australian Antarctic Data Centre</em> - <a href="https://data.aad.gov.au/metadata/regions">https://data.aad.gov.au/metadata/regions</a>, Accessed: 2024-06-24
+
+    Revision Date: 2019-04-09
+
+    Metadata URL: https://data.aad.gov.au/metadata/regions
+
+    Abstract: The regions dataset holds polygon data. The polygons are overlapping and suitable for use at multiple scales. The data include regions as large as the Southern Ocean, Australia's limit of the Southern Ocean, and AAT West. It also includes small areas such as Mawson Coast, Rauer Group and Bunger Hills. Extents for each region are defined in the attribute table.
+
+The data were captured so that online applications, such as the Map Catalogue and Data Navigator, could use region information consistently.
+
+The data are stored in geographicals, i.e. unprojected. The data include an attribute PROJECTION which stores the suggested projection for a region in code. The code represents projections used by Oracle.
+
+    Use Constraints: This data set conforms to the CCBY Attribution License (http://creativecommons.org/licenses/by/4.0/). 
+
+Please follow instructions listed in the citation reference provided at http://data.aad.gov.au/aadc/metadata/citation.cfm?entry_id=regions when using these data.
+
+    ID: 2162
+    Metadata ID: regions
+    UUID: 8908C392-8294-4387-B569-27DF0D8FE22D
