@@ -34,7 +34,7 @@ lit_rev_data|>colnames()
 
 within each study, I kept one point from each cluster of points that were within ~100 km. Some discretion was used depending on the nature of the clustering and the precision of the input (varies greatly from study to study, some coordinates had to be approximated from broad place names or maps)
 ```{r}
-lat_long_data_raw<-lit_rev_data[,c("Lat_d","Lat_m","Lat_s","Lat_dir","Long_d","Long_m","Long_s","Long_dir","which points to keep")]
+lat_long_data_raw<-lit_rev_data[,c("Lat_d","Lat_m","Lat_s","Lat_dir","Long_d","Long_m","Long_s","Long_dir","which points to keep","DOI","Year")]
 
 
 i=120
@@ -44,6 +44,8 @@ i=120
 lat_long_data<-lat_long_data_raw
 lat_long_data$filtered_lat<-NA
 lat_long_data$filtered_long<-NA
+list_of_all_filtered_lats<-c()
+list_of_all_filtered_longs<-c()
 for(i in 1:dim(lat_long_data_raw)[1]){
   #convert lat minutes and seconds into decimal
   a_d<-(lat_long_data_raw$Lat_d[i]|>str_split("\n"))[[1]]|>as.numeric()
@@ -110,10 +112,13 @@ for(i in 1:dim(lat_long_data_raw)[1]){
   lat_long_data$filtered_long[i]<-list(filtered_longitudes)
   lat_long_data$filtered_lat[i]<-list(filtered_latitudes)
   
+  list_of_all_filtered_lats<-c(list_of_all_filtered_lats,filtered_latitudes)
+  list_of_all_filtered_longs<-c(list_of_all_filtered_longs,filtered_longitudes)
   
 }
 
 #ylim = c(min(o_dd), min(o_dd)+100),xlim = c(min(a_dd),min(a_dd)+100)
+
 
 plot(o_dd,a_dd)
 text(o_dd,a_dd,labels=(1:length(a_dd)),pos=4)
@@ -138,6 +143,55 @@ coords<-data.frame("lat"=a_dd, "long"=o_dd,"labels"=c(1:length(o_dd)))
 #   geom_sf(fill = "lightblue")+
 #   geom_point(data=coords,aes(x=o_dd,y=a_dd,label=labels),check_overla)
 ```
+
+```{r}
+
+```
+
+
+```{r}
+library(ggOceanMaps)
+blah_df<-data.frame("lon"=list_of_all_filtered_longs,"lat"=list_of_all_filtered_lats)
+```
+```{r}
+arctic_subset<-blah_df[blah_df$lat>0,]
+arctic_bioregions<-read_sf("Arctic_regions/")
+st_crs(arctic_bioregions)<-3408
+arctic_bioregions$Name<-str_split_i(arctic_bioregions$Info,":",1)|>stringi::stri_unescape_unicode()
+arctic_bioregion_map<-basemap(limits = 55,
+                              glaciers=TRUE,shapefiles="Arctic",
+                              land.col = "white", gla.col = "lightblue", land.border.col = "grey", gla.border.col = "grey")+
+  theme(panel.ontop = FALSE)+
+  annotation_spatial(arctic_bioregions, aes(color = Name,fill=Name),alpha=.4)+
+  ggspatial::geom_spatial_point(data = arctic_subset, aes(x = lon, y = lat), color = "black")
+arctic_bioregion_map
+ggsave("arctic_bioregion_map.png",arctic_bioregion_map)
+```
+```{r}
+library(paletteer)
+ACBR <- read_sf("Data_associated_with_Conservation_biogeography_of_the_Antarctic_Terauds_et_al_2012/Shapefiles from Terauds et al 2012 DDI/ACBRs/")
+antarctic_subset<-blah_df[blah_df$lat<0,]
+
+ACBR_combined<-ACBR %>%
+  group_by(ACBR_NAME) %>% 
+  summarize(geometry = st_union(geometry))
+
+color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F')
+
+acbr_plot<-basemap(limits = -55,glaciers = TRUE,shapefiles="Antarctic",land.col = "red")+
+  #theme(panel.ontop = FALSE)+
+  annotation_spatial(ACBR_combined, aes(color = ACBR_NAME,fill=ACBR_NAME))+
+  ggspatial::geom_spatial_point(data = antarctic_subset, aes(x = lon, y = lat), color = "black")+
+  scale_colour_manual(values = color_assignments)+
+  scale_fill_manual(values=color_assignments)
+
+acbr_plot
+
+
+ggsave("acbr_plot.png",acbr_plot)  
+```
+
+
 ```{r}
 distm(c(62.8730,-67.6027),c(55.8,-67.6),fun=distHaversine)/1000
 ```
