@@ -5,7 +5,6 @@ date: "2026-01-13"
 ---
 ```{r}
 library(gsheet)
-library(tidyverse)
 
 ```
 ```{r}
@@ -41,7 +40,12 @@ lat_long_data_raw<-lit_rev_data[,c("Lat_d","Lat_m","Lat_s","Lat_dir","Long_d","L
 i=120
 ```
 ```{r}
-#for(i in dim(lat_long_data_raw)[1]){
+
+lat_long_data<-lat_long_data_raw
+lat_long_data$filtered_lat<-NA
+lat_long_data$filtered_long<-NA
+for(i in 1:dim(lat_long_data_raw)[1]){
+  #convert lat minutes and seconds into decimal
   a_d<-(lat_long_data_raw$Lat_d[i]|>str_split("\n"))[[1]]|>as.numeric()
   a_m<-(lat_long_data_raw$Lat_m[i]|>str_split("\n"))[[1]]|>as.numeric()
   a_s<-(lat_long_data_raw$Lat_s[i]|>str_split("\n"))[[1]]|>as.numeric()
@@ -58,7 +62,7 @@ i=120
     }
     
   }
-  
+  #a_dd now contains the current list of decimal latitudes
   a_dd<-a_d
   if(all(!(is.na(a_m)))){
     a_dd<-a_dd+a_m/60
@@ -67,9 +71,7 @@ i=120
     a_dd<-a_dd+a_s/3600
   }
   
-  a_dd
-  
-  
+  #do the same for the longitudes
   o_d<-(lat_long_data_raw$Long_d[i]|>str_split("\n"))[[1]]|>as.numeric()
   o_m<-(lat_long_data_raw$Long_m[i]|>str_split("\n"))[[1]]|>as.numeric()
   o_s<-(lat_long_data_raw$Long_s[i]|>str_split("\n"))[[1]]|>as.numeric()
@@ -94,11 +96,22 @@ i=120
   if(all(!(is.na(o_s)))){
     o_dd<-o_dd+o_s/3600
   }
+  #filter points based on my decisions
+  indexes_of_points_to_keep<-(lat_long_data_raw$`which points to keep`[i]|>str_split("\n"))[[1]]|>as.integer()
+  if(length(o_dd)>1){
+    filtered_longitudes<-o_dd[indexes_of_points_to_keep]
+    filtered_latitudes<-a_dd[indexes_of_points_to_keep]
+  }else{
+    filtered_longitudes<-o_dd
+    filtered_latitudes<-a_dd
+  }
   
- 
+  #df now has column which contain the filtered coords
+  lat_long_data$filtered_long[i]<-list(filtered_longitudes)
+  lat_long_data$filtered_lat[i]<-list(filtered_latitudes)
   
   
-#}
+}
 
 #ylim = c(min(o_dd), min(o_dd)+100),xlim = c(min(a_dd),min(a_dd)+100)
 
@@ -109,13 +122,13 @@ coords<-data.frame("lat"=a_dd, "long"=o_dd,"labels"=c(1:length(o_dd)))
 
 
 
-
-world <- ne_countries(scale="medium", returnclass = "sf")
-ggplot(data = world) +
-  geom_sf()  +
-  annotation_scale(location = "bl", width_hint = 0.4)+
-  geom_point(data=coords,aes(o_dd,a_dd))+
-  geom_label_repel(data=coords, aes(label=labels,x=o_dd,y=a_dd),size=2,max.overlaps = 50)
+# 
+# world <- ne_countries(scale="medium", returnclass = "sf")
+# ggplot(data = world) +
+#   geom_sf()  +
+#   annotation_scale(location = "bl", width_hint = 0.4)+
+#   geom_point(data=coords,aes(o_dd,a_dd))+
+#   geom_label_repel(data=coords, aes(label=labels,x=o_dd,y=a_dd),size=2,max.overlaps = 50)
     
 # antarct <- gisco_get_countries(year = 2024, resolution = 1, country = "ATA") %>%
 #   select(NAME = NAME_ENGL) |>
@@ -128,35 +141,3 @@ ggplot(data = world) +
 ```{r}
 distm(c(62.8730,-67.6027),c(55.8,-67.6),fun=distHaversine)/1000
 ```
-
-# Actually ingesting the data
-now that I have created a "which points to keep " column based on the plots produced above I can use that to filter the data and put it into a usable format
-```{r}
-
-i=1
-j=2
-points_to_keep<-lat_long_data_raw$`which points to keep`
-
-for(i in 1:length(o_dd)){
-  lat_1<-a_dd[i]
-  long_1<-o_dd[i]
-  
-      
-      
-      
-    }
-    
-  }
-  
-  
-}
-```
-
-```{r}
-
-
-
-
-```
-
-
