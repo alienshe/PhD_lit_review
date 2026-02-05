@@ -107,6 +107,9 @@ for(i in 1:dim(lat_long_data_raw)[1]){
     filtered_longitudes<-o_dd
     filtered_latitudes<-a_dd
   }
+  if(NA %in% filtered_longitudes){
+    print(i)
+  }
   
   #df now has column which contain the filtered coords
   lat_long_data$filtered_long[i]<-list(filtered_longitudes)
@@ -142,6 +145,7 @@ coords<-data.frame("lat"=a_dd, "long"=o_dd,"labels"=c(1:length(o_dd)))
 # ggplot(antarct) +
 #   geom_sf(fill = "lightblue")+
 #   geom_point(data=coords,aes(x=o_dd,y=a_dd,label=labels),check_overla)
+lat_long_data$filtered_lat[17]
 ```
 
 ```{r}
@@ -189,6 +193,16 @@ acbr_plot
 
 
 ggsave("acbr_plot.png",acbr_plot)  
+```
+```{r}
+
+pnts_sf <- st_as_sf(antarctic_subset, coords = c('lat', 'lon'), crs = st_crs(ACBR))
+
+pnts <- pnts_sf %>% mutate(
+  intersection = as.integer(st_intersects(geometry, ACBR))
+  , area = if_else(is.na(intersection), '', ACBR$ACBR_NAME[intersection])
+) 
+
 ```
 
 
