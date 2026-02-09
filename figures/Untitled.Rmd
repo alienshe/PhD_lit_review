@@ -229,23 +229,37 @@ num_points_near_ACBR<-merge(x=num_points_near_ACBR,y=point_count_table,by.x = "A
 colnames(num_points_near_ACBR)[2]<-"num_points"
 ACBR_combined$num_points<-num_points_near_ACBR$num_points
 pnts_sf$closest_ACBR<-closest_ACBR
+pnts_sf<-merge(x=pnts_sf,y=num_points_near_ACBR,by.x="closest_ACBR",by.y="ACBR",all.x=TRUE,all.y=FALSE)
 
+
+no_acbr<-pnts_sf[is.na(pnts_sf$closest_ACBR),]
 ```
 ```{r}
 
-color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F')
+color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F','No ACBR'="black")
 
-ggplot(data=ACBR_combined,aes(ACBR_NAME,num_points))+
-  geom_col(aes(fill=ACBR_NAME))+
+pnts_sf[is.na(pnts_sf$ACBR_NAME),]$ACBR_NAME<-"No ACBR"
+
+counts_ACBRS<-table(pnts_sf$ACBR_NAME)|>as.data.frame()
+counts_ACBRS<-merge(x=counts_ACBRS,y=num_points_near_ACBR,by.x="Var1",by.y="ACBR_NAME",all.x=TRUE,all.y=TRUE)|>arrange(ACBR)
+
+counts_ACBRS$Var1=factor(counts_ACBRS$Var1, levels=counts_ACBRS$Var1)
+
+ACBR_barplot<-ggplot(data=counts_ACBRS,aes(Var1,Freq))+
+  geom_col(aes(fill=Var1))+
   scale_fill_manual(values=color_assignments,guide="none")+
-  geom_text(aes(label=num_points),vjust=-.6)+
-  theme_classic()+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)
-
-
+  geom_text(aes(y=Freq,label=Freq),vjust=-.6)+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust=1))+
+  ylab("Number of sampling sites")+
+  xlab("ACBR")+
+  ylim(c(0,51))
+  ACBR_barplot
+ggsave("ACBR_barplot.png",ACBR_barplot)
 acbr_plot<-basemap(limits = -55,glaciers = FALSE,shapefiles="Antarctic",land.col = "white",land.border.col = "darkgrey")+
   #theme(panel.ontop = FALSE)+
   annotation_spatial(ACBR_combined, aes(color = ACBR_NAME,fill=ACBR_NAME),size=1.3)+
-  annotation_spatial(pnts_sf,color="black")+
+  annotation_spatial(pnts_sf,aes(alpha=ldist))+
   scale_colour_manual(values = color_assignments)+
   scale_fill_manual(values=color_assignments)
 acbr_plot
