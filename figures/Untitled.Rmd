@@ -182,7 +182,7 @@ ACBR_combined<-ACBR %>%
 
 color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F')
 
-acbr_plot<-basemap(limits = -55,glaciers = TRUE,shapefiles="Antarctic",land.col = "red")+
+acbr_plot<-basemap(limits = -55,glaciers = FALSE,shapefiles="Antarctic",land.col = "white",land.border.col = "darkgrey")+
   #theme(panel.ontop = FALSE)+
   annotation_spatial(ACBR_combined, aes(color = ACBR_NAME,fill=ACBR_NAME))+
   ggspatial::geom_spatial_point(data = antarctic_subset, aes(x = lon, y = lat), color = "black")+
@@ -191,18 +191,16 @@ acbr_plot<-basemap(limits = -55,glaciers = TRUE,shapefiles="Antarctic",land.col 
 
 acbr_plot
 
-
 ggsave("acbr_plot.png",acbr_plot)  
 ```
 ```{r}
 
 pnts_sf <- st_as_sf(antarctic_subset, coords = c('lat', 'lon'), crs = st_crs(ACBR))
 
-pnts <- pnts_sf %>% mutate(
-  intersection = as.integer(st_intersects(geometry, ACBR))
-  , area = if_else(is.na(intersection), '', ACBR$ACBR_NAME[intersection])
-) 
 
+points_sf_joined <- st_join(pnts_sf, ACBR, join = st_within)
+points_in_ACBRs <- count(as_tibble(points_sf_joined), ACBR_NAME) %>%
+                                   arrange(desc(n)) %>% print()
 ```
 
 
