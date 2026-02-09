@@ -176,41 +176,151 @@ library(paletteer)
 ACBR <- read_sf("Data_associated_with_Conservation_biogeography_of_the_Antarctic_Terauds_et_al_2012/Shapefiles from Terauds et al 2012 DDI/ACBRs/")
 antarctic_subset<-blah_df[blah_df$lat<0,]
 
+
 ACBR_combined<-ACBR %>%
   group_by(ACBR_NAME) %>% 
   summarize(geometry = st_union(geometry))
 
+```
+```{r}
+
+pnts_sf <- st_as_sf(antarctic_subset, coords = c('lon','lat'))
+st_crs(pnts_sf)<-"EPSG: 4326"
+pnts_sf<-st_transform(pnts_sf,"ESRI:102021")
+
+ACBR_combined<-st_transform(ACBR_combined,"ESRI:102021")
+
+buffered_points<-st_buffer(pnts_sf,dist=100000)
+
+intersects<-lengths(st_overlaps(ACBR_combined, buffered_points))
+
+distances_df<-(st_distance(ACBR_combined, pnts_sf)|>t()|>as.data.frame())
+
+distances_df <- sapply( distances_df, as.numeric )|>as.data.frame()
+
+colnames(distances_df)<-1:15
+
+
+i=1
+
+closest_ACBR<-c()
+for(i in 1:dim(distances_df)[1]){
+  distances<-as.numeric(as.vector(distances_df[i,]))
+  smallest_distance<-min(distances)
+  
+  if(smallest_distance<100000){
+    closest_ACBR<-c(closest_ACBR,which.min(distances))
+    print(i)
+  }else{
+    closest_ACBR<-c(closest_ACBR,NA)
+    print(which.min(distances))
+  }
+  
+}
+
+table(closest_ACBR,useNA = "ifany")|>barplot()
+
+point_count_table<-table(closest_ACBR)|>as.matrix()|>as.data.frame()
+
+num_points_near_ACBR<-data.frame("ACBR"=c(1:15),"ACBR_NAME"=ACBR_combined$ACBR_NAME)
+num_points_near_ACBR<-merge(x=num_points_near_ACBR,y=point_count_table,by.x = "ACBR",by.y="row.names",all.x = TRUE,all.y=FALSE)
+
+
+colnames(num_points_near_ACBR)[2]<-"num_points"
+ACBR_combined$num_points<-num_points_near_ACBR$num_points
+pnts_sf$closest_ACBR<-closest_ACBR
+
+```
+```{r}
+
 color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F')
+
+ggplot(data=ACBR_combined,aes(ACBR_NAME,num_points))+
+  geom_col(aes(fill=ACBR_NAME))+
+  scale_fill_manual(values=color_assignments,guide="none")+
+  geom_text(aes(label=num_points),vjust=-.6)+
+  theme_classic()+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)
+
 
 acbr_plot<-basemap(limits = -55,glaciers = FALSE,shapefiles="Antarctic",land.col = "white",land.border.col = "darkgrey")+
   #theme(panel.ontop = FALSE)+
-  annotation_spatial(ACBR_combined, aes(color = ACBR_NAME,fill=ACBR_NAME))+
-  ggspatial::geom_spatial_point(data = antarctic_subset, aes(x = lon, y = lat), color = "black")+
+  annotation_spatial(ACBR_combined, aes(color = ACBR_NAME,fill=ACBR_NAME),size=1.3)+
+  annotation_spatial(pnts_sf,color="black")+
   scale_colour_manual(values = color_assignments)+
   scale_fill_manual(values=color_assignments)
-
 acbr_plot
+ggsave("acbr_plot.png",acbr_plot)
 
-ggsave("acbr_plot.png",acbr_plot)  
+
 ```
 ```{r}
+# Source - https://stackoverflow.com/a/78381426
+# Posted by L Tyrone, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-02-09, License - CC BY-SA 4.0
 
-pnts_sf <- st_as_sf(antarctic_subset, coords = c('lon','lat'), crs = st_crs(ACBR))
+# Create 'centroids' of municipalities (you can safely ignore the warning)
+sf_centroids <- ACBR_combined %>% st_point_on_surface()
 
-buffered_polygons <- st_buffer(ACBR, dist = 1000000)
-points_sf_joined <- st_join(pnts_sf, buffered_polygons, join = st_within)
-points_in_ACBRs <- count(as_tibble(points_sf_joined), ACBR_NAME) %>%
-                                   arrange(desc(n)) %>% print()
+pos_cent<-sf_centroids %>% subset(st_coordinates(.)[,1]>0)
+
+# Create points for label locations
+label_pos <- sf_centroids %>%
+  st_transform("EPSG: 4326") %>%
+  mutate(lat = -60,
+         lon = st_coordinates(.)[,1]) %>%
+  st_drop_geometry()|> st_as_sf(coords = c("lon", "lat")) %>%
+  st_set_crs(st_crs("EPSG: 4326"))|>
+  st_transform("ESRI:102021")
 
 
-counts_with_error <- ACBR %>%
-  mutate(point_count = lengths(st_intersects(buffered_polygons, pnts_sf)))|>group_by(ACBR_NAME)|>summarise(sum_points=sum(point_count))
-
-
-counts_with_error
 ```
+```{r}
+sf_lines <- rbind(label_pos[,"ACBR_NAME"], 
+                  sf_centroids[,"ACBR_NAME"]) %>%
+  group_by(ACBR_NAME) %>%
+  summarise(geometry = st_union(geometry)) %>%
+  st_cast("LINESTRING")
+# Source - https://stackoverflow.com/a/78381426
+# Posted by L Tyrone, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-02-09, License - CC BY-SA 4.0
 
+
+# Plot labels using geo_sf_text
+ggplot() + 
+  geom_sf(data = mapdata) +
+  geom_sf(data = sf_lines, linewidth = 0.15) +
+  geom_sf(data = sf_labels, shape = 21, fill = "white", size = 0.75) +
+  geom_sf(data = sf_centroids, size = 0.75) +
+  geom_sf_text(data = sf_labels,
+               aes(label = labels1),
+               size = 2,
+               vjust = -2,
+               fun.geometry = st_centroid,
+               colour = "black") +
+  geom_sf_text(data = sf_labels,
+               aes(label = labels2),
+               size = 1.5,
+               vjust = -1,
+               fun.geometry = st_centroid,
+               colour = "black") +
+  coord_sf(clip = "off") +
+  theme_void()
+
+sf_centroids$geometry
+```
 
 ```{r}
-distm(c(62.8730,-67.6027),c(55.8,-67.6),fun=distHaversine)/1000
+
+color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F')
+
+basemap(limits = -55,glaciers = FALSE,shapefiles="Antarctic",land.col = "white",land.border.col = "darkgrey")+
+  #theme(panel.ontop = FALSE)+
+  annotation_spatial(ACBR_combined, aes(color = ACBR_NAME,fill=ACBR_NAME))+
+  annotation_spatial(data = label_pos,color = "black")+ 
+  annotation_spatial(data = sf_lines,color = "black")+ 
+  scale_colour_manual(values = color_assignments,guide="none")+
+  scale_fill_manual(values=color_assignments,guide="none")
+
+#ggsave("acbr_plot.png",acbr_plot)  
 ```
+
