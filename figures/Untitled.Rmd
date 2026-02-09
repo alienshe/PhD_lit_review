@@ -195,12 +195,19 @@ ggsave("acbr_plot.png",acbr_plot)
 ```
 ```{r}
 
-pnts_sf <- st_as_sf(antarctic_subset, coords = c('lat', 'lon'), crs = st_crs(ACBR))
+pnts_sf <- st_as_sf(antarctic_subset, coords = c('lon','lat'), crs = st_crs(ACBR))
 
-
-points_sf_joined <- st_join(pnts_sf, ACBR, join = st_within)
+buffered_polygons <- st_buffer(ACBR, dist = 1000000)
+points_sf_joined <- st_join(pnts_sf, buffered_polygons, join = st_within)
 points_in_ACBRs <- count(as_tibble(points_sf_joined), ACBR_NAME) %>%
                                    arrange(desc(n)) %>% print()
+
+
+counts_with_error <- ACBR %>%
+  mutate(point_count = lengths(st_intersects(buffered_polygons, pnts_sf)))|>group_by(ACBR_NAME)|>summarise(sum_points=sum(point_count))
+
+
+counts_with_error
 ```
 
 
