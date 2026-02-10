@@ -5,21 +5,19 @@ date: "2026-01-13"
 ---
 ```{r}
 library(gsheet)
-
-```
-```{r}
 library(tidyverse)
 library(ggspatial)
 library(sf)
 library(rnaturalearth) # map data
 library(rnaturalearthdata)# map data
 library(giscoR)
-library(ggrepel)
 library(rmapshaper)
 library(celestial)
 library(geosphere)
+library(paletteer)
+library(ggOceanMaps)
 ```
-
+injest data from spreadsheet
 ```{r}
 url<-construct_download_url("https://docs.google.com/spreadsheets/d/1kUt2Z7xGvePlBPR9qzLLC4ZrfZd-t4GcO0Qit9ym-IY/edit?usp=sharing", format="csv", sheetid=1374399622)
 
@@ -28,16 +26,15 @@ save(lit_rev_data,file="lit_rev_data.Rda")
 ```
 
 ```{r}
+#subset to only antarctic papers
 lit_rev_data|>colnames()
+antarctic_data<-lit_rev_data[lit_rev_data$`Antarctic?`=="Yes",]
 ```
 # Investigating the data to choose points
 
 within each study, I kept one point from each cluster of points that were within ~100 km. Some discretion was used depending on the nature of the clustering and the precision of the input (varies greatly from study to study, some coordinates had to be approximated from broad place names or maps)
 ```{r}
-lat_long_data_raw<-lit_rev_data[,c("Lat_d","Lat_m","Lat_s","Lat_dir","Long_d","Long_m","Long_s","Long_dir","which points to keep","DOI","Year")]
-
-
-i=120
+lat_long_data_raw<-antarctic_data[,c("Lat_d","Lat_m","Lat_s","Lat_dir","Long_d","Long_m","Long_s","Long_dir","which points to keep","DOI","Year")]
 ```
 ```{r}
 
@@ -119,14 +116,16 @@ for(i in 1:dim(lat_long_data_raw)[1]){
   list_of_all_filtered_longs<-c(list_of_all_filtered_longs,filtered_longitudes)
   
 }
+#code i used to map things to help choose which points to keep
+
 
 #ylim = c(min(o_dd), min(o_dd)+100),xlim = c(min(a_dd),min(a_dd)+100)
 
 
-plot(o_dd,a_dd)
-text(o_dd,a_dd,labels=(1:length(a_dd)),pos=4)
-
-coords<-data.frame("lat"=a_dd, "long"=o_dd,"labels"=c(1:length(o_dd)))
+# plot(o_dd,a_dd)
+# text(o_dd,a_dd,labels=(1:length(a_dd)),pos=4)
+# 
+# coords<-data.frame("lat"=a_dd, "long"=o_dd,"labels"=c(1:length(o_dd)))
 
 
 
@@ -145,49 +144,29 @@ coords<-data.frame("lat"=a_dd, "long"=o_dd,"labels"=c(1:length(o_dd)))
 # ggplot(antarct) +
 #   geom_sf(fill = "lightblue")+
 #   geom_point(data=coords,aes(x=o_dd,y=a_dd,label=labels),check_overla)
-lat_long_data$filtered_lat[17]
-```
-
-```{r}
-
+#lat_long_data$filtered_lat[17]
 ```
 
 
 ```{r}
-library(ggOceanMaps)
-blah_df<-data.frame("lon"=list_of_all_filtered_longs,"lat"=list_of_all_filtered_lats)
+
+lat_long_df<-data.frame("lon"=list_of_all_filtered_longs,"lat"=list_of_all_filtered_lats)
 ```
+
 ```{r}
-arctic_subset<-blah_df[blah_df$lat>0,]
-arctic_bioregions<-read_sf("Arctic_regions/")
-st_crs(arctic_bioregions)<-3408
-arctic_bioregions$Name<-str_split_i(arctic_bioregions$Info,":",1)|>stringi::stri_unescape_unicode()
-arctic_bioregion_map<-basemap(limits = 55,
-                              glaciers=TRUE,shapefiles="Arctic",
-                              land.col = "white", gla.col = "lightblue", land.border.col = "grey", gla.border.col = "grey")+
-  theme(panel.ontop = FALSE)+
-  annotation_spatial(arctic_bioregions, aes(color = Name,fill=Name),alpha=.4)+
-  ggspatial::geom_spatial_point(data = arctic_subset, aes(x = lon, y = lat), color = "black")
-arctic_bioregion_map
-ggsave("arctic_bioregion_map.png",arctic_bioregion_map)
-```
-```{r}
-library(paletteer)
-ACBR <- read_sf("Data_associated_with_Conservation_biogeography_of_the_Antarctic_Terauds_et_al_2012/Shapefiles from Terauds et al 2012 DDI/ACBRs/")
-antarctic_subset<-blah_df[blah_df$lat<0,]
 
+#read in shape file of bioregions
 
-ACBR_combined<-ACBR %>%
-  group_by(ACBR_NAME) %>% 
-  summarize(geometry = st_union(geometry))
-
+ACBR <- read_sf("AAS_4296_Antarctic_Conservation_Biogeographic_Regions_v2/ACBRs_v2_2016/")
 ```
 ```{r}
 
-pnts_sf <- st_as_sf(antarctic_subset, coords = c('lon','lat'))
+pnts_sf <- st_as_sf(lat_long_df, coords = c('lon','lat'))
 st_crs(pnts_sf)<-"EPSG: 4326"
 pnts_sf<-st_transform(pnts_sf,"ESRI:102021")
-
+ACBR_combined<-ACBR %>%
+  group_by(ACBR_Name) %>% 
+  summarize(geometry = st_union(geometry))
 ACBR_combined<-st_transform(ACBR_combined,"ESRI:102021")
 
 buffered_points<-st_buffer(pnts_sf,dist=100000)
@@ -222,26 +201,26 @@ table(closest_ACBR,useNA = "ifany")|>barplot()
 
 point_count_table<-table(closest_ACBR)|>as.matrix()|>as.data.frame()
 
-num_points_near_ACBR<-data.frame("ACBR"=c(1:15),"ACBR_NAME"=ACBR_combined$ACBR_NAME)
+num_points_near_ACBR<-data.frame("ACBR"=c(1:16),"ACBR_Name"=ACBR_combined$ACBR_Name)
 num_points_near_ACBR<-merge(x=num_points_near_ACBR,y=point_count_table,by.x = "ACBR",by.y="row.names",all.x = TRUE,all.y=FALSE)
 
 
-colnames(num_points_near_ACBR)[2]<-"num_points"
+colnames(num_points_near_ACBR)[3]<-"num_points"
 ACBR_combined$num_points<-num_points_near_ACBR$num_points
 pnts_sf$closest_ACBR<-closest_ACBR
 pnts_sf<-merge(x=pnts_sf,y=num_points_near_ACBR,by.x="closest_ACBR",by.y="ACBR",all.x=TRUE,all.y=FALSE)
 
 
-no_acbr<-pnts_sf[is.na(pnts_sf$closest_ACBR),]
+pnts_sf[is.na(pnts_sf$ACBR_Name),]$ACBR_Name<-"No ACBR"
 ```
 ```{r}
 
-color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F','No ACBR'="black")
+color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F','Prince Charles Mountains'="gold",'No ACBR'="black")
 
-pnts_sf[is.na(pnts_sf$ACBR_NAME),]$ACBR_NAME<-"No ACBR"
 
-counts_ACBRS<-table(pnts_sf$ACBR_NAME)|>as.data.frame()
-counts_ACBRS<-merge(x=counts_ACBRS,y=num_points_near_ACBR,by.x="Var1",by.y="ACBR_NAME",all.x=TRUE,all.y=TRUE)|>arrange(ACBR)
+
+counts_ACBRS<-table(pnts_sf$ACBR_Name)|>as.data.frame()
+counts_ACBRS<-merge(x=counts_ACBRS,y=num_points_near_ACBR,by.x="Var1",by.y="ACBR_Name",all.x=TRUE,all.y=TRUE)|>arrange(ACBR)
 
 counts_ACBRS$Var1=factor(counts_ACBRS$Var1, levels=counts_ACBRS$Var1)
 
@@ -254,87 +233,17 @@ ACBR_barplot<-ggplot(data=counts_ACBRS,aes(Var1,Freq))+
   ylab("Number of sampling sites")+
   xlab("ACBR")+
   ylim(c(0,51))
-  ACBR_barplot
+ACBR_barplot
 ggsave("ACBR_barplot.png",ACBR_barplot)
 acbr_plot<-basemap(limits = -55,glaciers = FALSE,shapefiles="Antarctic",land.col = "white",land.border.col = "darkgrey")+
   #theme(panel.ontop = FALSE)+
-  annotation_spatial(ACBR_combined, aes(color = ACBR_NAME,fill=ACBR_NAME),size=1.3)+
-  annotation_spatial(pnts_sf,aes(alpha=ldist))+
+  annotation_spatial(ACBR_combined, aes(color = ACBR_Name,fill=ACBR_Name),size=1.3)+
+  annotation_spatial(pnts_sf,color="black")+
   scale_colour_manual(values = color_assignments)+
   scale_fill_manual(values=color_assignments)
 acbr_plot
 ggsave("acbr_plot.png",acbr_plot)
 
 
-```
-```{r}
-# Source - https://stackoverflow.com/a/78381426
-# Posted by L Tyrone, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-02-09, License - CC BY-SA 4.0
-
-# Create 'centroids' of municipalities (you can safely ignore the warning)
-sf_centroids <- ACBR_combined %>% st_point_on_surface()
-
-pos_cent<-sf_centroids %>% subset(st_coordinates(.)[,1]>0)
-
-# Create points for label locations
-label_pos <- sf_centroids %>%
-  st_transform("EPSG: 4326") %>%
-  mutate(lat = -60,
-         lon = st_coordinates(.)[,1]) %>%
-  st_drop_geometry()|> st_as_sf(coords = c("lon", "lat")) %>%
-  st_set_crs(st_crs("EPSG: 4326"))|>
-  st_transform("ESRI:102021")
-
-
-```
-```{r}
-sf_lines <- rbind(label_pos[,"ACBR_NAME"], 
-                  sf_centroids[,"ACBR_NAME"]) %>%
-  group_by(ACBR_NAME) %>%
-  summarise(geometry = st_union(geometry)) %>%
-  st_cast("LINESTRING")
-# Source - https://stackoverflow.com/a/78381426
-# Posted by L Tyrone, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-02-09, License - CC BY-SA 4.0
-
-
-# Plot labels using geo_sf_text
-ggplot() + 
-  geom_sf(data = mapdata) +
-  geom_sf(data = sf_lines, linewidth = 0.15) +
-  geom_sf(data = sf_labels, shape = 21, fill = "white", size = 0.75) +
-  geom_sf(data = sf_centroids, size = 0.75) +
-  geom_sf_text(data = sf_labels,
-               aes(label = labels1),
-               size = 2,
-               vjust = -2,
-               fun.geometry = st_centroid,
-               colour = "black") +
-  geom_sf_text(data = sf_labels,
-               aes(label = labels2),
-               size = 1.5,
-               vjust = -1,
-               fun.geometry = st_centroid,
-               colour = "black") +
-  coord_sf(clip = "off") +
-  theme_void()
-
-sf_centroids$geometry
-```
-
-```{r}
-
-color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F')
-
-basemap(limits = -55,glaciers = FALSE,shapefiles="Antarctic",land.col = "white",land.border.col = "darkgrey")+
-  #theme(panel.ontop = FALSE)+
-  annotation_spatial(ACBR_combined, aes(color = ACBR_NAME,fill=ACBR_NAME))+
-  annotation_spatial(data = label_pos,color = "black")+ 
-  annotation_spatial(data = sf_lines,color = "black")+ 
-  scale_colour_manual(values = color_assignments,guide="none")+
-  scale_fill_manual(values=color_assignments,guide="none")
-
-#ggsave("acbr_plot.png",acbr_plot)  
 ```
 
