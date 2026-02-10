@@ -1,0 +1,64 @@
+---
+title: "genera"
+output: html_document
+date: "2026-02-10"
+---
+
+```{r}
+library(tidyverse)
+library(stringi)
+```
+
+```{r}
+url<-construct_download_url("https://docs.google.com/spreadsheets/d/1kUt2Z7xGvePlBPR9qzLLC4ZrfZd-t4GcO0Qit9ym-IY/edit?usp=sharing", format="csv", sheetid=1374399622)
+
+lit_rev_data<-gsheet2tbl(url)
+save(lit_rev_data,file="lit_rev_data.Rda")
+```
+
+```{r}
+lit_rev_data|>colnames()
+antarctic_subset<-lit_rev_data[lit_rev_data$`Antarctic?`=="Yes",]
+#still need to do - replace outdated genus names based on this sheet https://docs.google.com/spreadsheets/d/1kUt2Z7xGvePlBPR9qzLLC4ZrfZd-t4GcO0Qit9ym-IY/edit?gid=1644008507#gid=1644008507
+```
+
+first order of business - clean up genera column
+
+```{r}
+
+dump_of_all_genera<-c()
+for(i in 1:dim(antarctic_subset)[1]){
+  
+  current_genera_vector<-(antarctic_subset$`Taxa isolated`[i]|>str_split("\n"))[[1]]|> stri_remove_empty_na()|>str_trim()
+  dump_of_all_genera<-c(dump_of_all_genera,current_genera_vector)
+}
+
+genera_counts<-table(dump_of_all_genera)|>as.data.frame()|>rowid_to_column("ID")
+
+
+```
+use FUNGuildR package to make eliminate any non genus taxa
+```{r}
+library(FUNGuildR)
+#download db - may want to rerun this bit every now and then as db updates online
+#fungi_db<- get_funguild_db()
+#save(fungi_db,file="funguild_db.RData")
+load("funguild_db.RData")
+i=1
+funguild_results_df<-as.data.frame(matrix(NA, nrow = 0, ncol = 12))
+colnames(funguild_results_df)<-c("id","taxon","guid","mbNumber","taxonomicLevel","trophicMode","guild","confidenceRanking","growthForm","trait","notes","citationSource")
+for(i in 1:dim(genera_counts)[1]){
+  query_result<-funguild_query(genera_counts$dump_of_all_genera[i]|>as.character(),"taxon",db=fungi_db)
+  query_result$id<-i
+  funguild_results_df<-rbind(funguild_results_df,query_result)
+  print(i)
+}
+
+
+
+```
+
+```{r}
+merged_taxonomy_df<-merge(genera_counts,funguild_results_df,by.x="ID",by.y="id",all.x=TRUE)
+```
+
