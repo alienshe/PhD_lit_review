@@ -28,7 +28,7 @@ save(lit_rev_data,file="lit_rev_data.Rda")
 ```{r}
 #subset to only antarctic papers
 lit_rev_data|>colnames()
-antarctic_data<-lit_rev_data[lit_rev_data$`Antarctic?`=="Yes",]
+antarctic_data<-lit_rev_data[lit_rev_data$`Antarctic?...2`=="Yes",]
 ```
 # Investigating the data to choose points
 
@@ -165,7 +165,7 @@ pnts_sf <- st_as_sf(lat_long_df, coords = c('lon','lat'))
 st_crs(pnts_sf)<-"EPSG: 4326"
 pnts_sf<-st_transform(pnts_sf,"ESRI:102021")
 ACBR_combined<-ACBR %>%
-  group_by(ACBR_Name) %>% 
+  group_by(ACBR_Name) %>%
   summarize(geometry = st_union(geometry))
 ACBR_combined<-st_transform(ACBR_combined,"ESRI:102021")
 
@@ -175,9 +175,9 @@ intersects<-lengths(st_overlaps(ACBR_combined, buffered_points))
 
 distances_df<-(st_distance(ACBR_combined, pnts_sf)|>t()|>as.data.frame())
 
-distances_df <- sapply( distances_df, as.numeric )|>as.data.frame()
+distances_df <- sapply(distances_df, as.numeric)|>as.data.frame()
 
-colnames(distances_df)<-1:15
+colnames(distances_df)<-1:16
 
 
 i=1
@@ -217,8 +217,6 @@ pnts_sf[is.na(pnts_sf$ACBR_Name),]$ACBR_Name<-"No ACBR"
 
 color_assignments=c('North-east Antarctic Peninsula'='#146BB3','North-west Antarctic Peninsula'='#5689c5','South Antarctic peninsula'='#83A7D6','Central south Antarctic Peninsula'='#AEC7E8','Ellsworth Land'='#FF7F0E','Ellsworth Mountains'='#FFBB78','North Victoria Land'='#E377C2','South Victoria Land'='#F7B6D2','Adelie Land'='#2CA02C','Dronning Maud Land'='#D62728','East Antarctica'='#9467BD','Enderby Land'='#8C564B','Marie Byrd Land'='#BCBD22','South Orkney Islands'='#17BECF','Transantarctic Mountains'='#7F7F7F','Prince Charles Mountains'="gold",'No ACBR'="black")
 
-
-
 counts_ACBRS<-table(pnts_sf$ACBR_Name)|>as.data.frame()
 counts_ACBRS<-merge(x=counts_ACBRS,y=num_points_near_ACBR,by.x="Var1",by.y="ACBR_Name",all.x=TRUE,all.y=TRUE)|>arrange(ACBR)
 
@@ -246,4 +244,53 @@ ggsave("acbr_plot.png",acbr_plot)
 
 
 ```
+
+```{r}
+library(ggguides)
+claims_df<-data.frame(id=c("Australia1","Australia1"),country=c("Australian Antarctic Territory","Australian Antarctic Territory"),lat1=c(160,136),lat2=c(142,44.633333))
+i=1
+
+Australia_1<-data.frame(lat = c(-89.999, -60, rep(-60,length(142:160)), -60, -89.999), lon = c(142, 142,c(142:160), 160,142),id="Australia1",country="Australia")
+Australia_2<-data.frame(lat = c(-89.999, -60, rep(-60,length(45:136)),-60, -89.999), lon = c(44.633333,44.633333,c(45:136),136,44.633333),id="Australia2",country="Australia")
+claims<-rbind(Australia_1,Australia_2)
+
+
+claims_sf <- sfheaders::sf_polygon(
+  obj = claims
+  , x = "lon"
+  , y = "lat"
+  , polygon_id = "country"
+)
+line_assignments<-c('Australian Antarctic Territory'="dashed")
+st_crs(claims_sf)<-"EPSG: 4326"
+claims_sf<-st_transform(claims_sf,"ESRI:102021")
+
+mawson_station <- data.frame(lat = -67.6033, lon = 62.8742,name="Mawson Station")
+
+mawson_station <- st_as_sf(mawson_station, coords = c('lon','lat'))
+st_crs(mawson_station)<-"EPSG: 4326"
+mawson_station<-st_transform(mawson_station,"ESRI:102021")
+mawson_station_df <- cbind(mawson_station, st_coordinates(st_centroid(mawson_station$geometry)))
+stations_map<-basemap(limits = -55,glaciers = FALSE,shapefiles="Antarctic",land.col = "white",land.border.col = "darkgrey")+
+  #theme(panel.ontop = FALSE)+
+  annotation_spatial(ACBR_combined, aes(color = ACBR_Name,fill=ACBR_Name),size=1.3)+
+  scale_colour_manual(values = color_assignments)+
+  scale_fill_manual(values=color_assignments)+
+  annotation_spatial(mawson_station,color="black")+
+  ggrepel::geom_text_repel(data= mawson_station_df,aes(x=X, y=Y, label=name),
+    color = "black", check_overlap = FALSE,nudge_x = 3000000,nudge_y = 500000)+
+  annotation_spatial(claims_sf,alpha=0, aes(linetype="Australian Antarctic Territory"))+
+  scale_linetype_manual(values=line_assignments)+
+  labs(fill="Ice-Free ACBR",color="Ice-Free ACBR",linetype=element_blank())+
+  legend_left(by = c("fill")) +
+  legend_left(by=c("color"))+
+  legend_bottom(by = "linetype")+
+  theme(legend.text = element_text(size=8))+
+  #legend_style(size = 5,by="fill",)+
+  #legend_style(size = 5,by="color")+
+  theme(legend.text = element_text(size=8))
+stations_map
+
+```
+
 
