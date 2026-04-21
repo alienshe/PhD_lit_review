@@ -7,6 +7,8 @@ date: "2026-02-10"
 ```{r}
 library(tidyverse)
 library(stringi)
+library(googledrive)
+library(gsheet)
 ```
 
 ```{r}
@@ -18,13 +20,14 @@ save(lit_rev_data,file="lit_rev_data.Rda")
 
 ```{r}
 lit_rev_data|>colnames()
-antarctic_subset<-lit_rev_data[lit_rev_data$`Antarctic?`=="Yes",]
+antarctic_subset<-lit_rev_data[lit_rev_data$`Antarctic?...2`=="Yes",]
 #still need to do - replace outdated genus names based on this sheet https://docs.google.com/spreadsheets/d/1kUt2Z7xGvePlBPR9qzLLC4ZrfZd-t4GcO0Qit9ym-IY/edit?gid=1644008507#gid=1644008507
 ```
 
 first order of business - clean up genera column
 
 ```{r}
+
 
 dump_of_all_genera<-c()
 for(i in 1:dim(antarctic_subset)[1]){
@@ -35,8 +38,76 @@ for(i in 1:dim(antarctic_subset)[1]){
 
 genera_counts<-table(dump_of_all_genera)|>as.data.frame()|>rowid_to_column("ID")
 
+  antarctic_subset$number_of_unique_genera<-0
+  antarctic_subset$total_number_of_genera<-0
+  for(i in 1:dim(antarctic_subset)[1]){
+
+    current_genera_vector<-
+      (antarctic_subset$`Taxa isolated`[i]|>str_split("\n"))[[1]]|> stri_remove_empty_na()|>str_trim()|>na.omit()
+    if(length(current_genera_vector)==0){
+      antarctic_subset$number_of_unique_genera[i]=0
+      antarctic_subset$total_number_of_genera[i]=0
+
+    }else{
+      for(j in 1:length(current_genera_vector)){
+        
+        number_of_appearances<-length(dump_of_all_genera[dump_of_all_genera==current_genera_vector[j]])
+      
+        
+        if(number_of_appearances==1){
+          antarctic_subset$number_of_unique_genera[i]<-antarctic_subset$number_of_unique_genera[i]+1
+        }
+      antarctic_subset$total_number_of_genera[i]<-length(current_genera_vector)
+      }
+    }
+  }
+
 
 ```
+
+
+
+```{r}
+df<-high_dilution_subset
+i=5
+antarctic_subset$plating_even_briefer<-""
+antarctic_subset[antarctic_subset$dilution=="at least 10-3",]$plating_even_briefer<-"high_dilution"
+antarctic_subset[antarctic_subset$dilution=="direct plating",]$plating_even_briefer<-"direct plating"
+antarctic_subset[(antarctic_subset$dilution!="direct plating")&(antarctic_subset$dilution!="at least 10-3"),]$plating_even_briefer<-"low_dilution"
+create_gen_df<-function(df){
+  dump_of_all_genera<-c()
+  for(i in 1:dim(df)[1]){
+    
+    current_genera_vector<-(df$`Taxa isolated`[i]|>str_split("\n"))[[1]]|> stri_remove_empty_na()|>str_trim()
+    dump_of_all_genera<-c(dump_of_all_genera,current_genera_vector)
+  }
+  genera_counts<-table(dump_of_all_genera)|>as.data.frame()|>rowid_to_column("ID")
+  return(genera_counts)}
+antarctic_subset
+
+  
+
+i=1
+high_dil_genera_counts<-create_gen_df(high_dilution_subset)
+high_dil_genera_counts$percapfreq<-high_dil_genera_counts$Freq/dim(high_dilution_subset)[1]
+low_dil_genera_counts<-create_gen_df(low_dilution_subset)
+low_dil_genera_counts$percapfreq<-low_dil_genera_counts$Freq/dim(low_dilution_subset)[1]
+direct_genera_counts<-create_gen_df(direct_plating_subset)
+direct_genera_counts$percapfreq<-direct_genera_counts$Freq/dim(direct_plating_subset)[1]
+merged_genera_counts<-merge(high_dil_genera_counts,low_dil_genera_counts, by="dump_of_all_genera",all=TRUE,suffixes = c("_high","_low"))
+merged_genera_counts<-merge(merged_genera_counts,direct_genera_counts,by="dump_of_all_genera",all=TRUE,suffixes = c("","_direct"))
+merged_genera_counts$Freq_low|>na.omit()|>length()
+merged_genera_counts$Freq_high|>na.omit()|>length()
+merged_genera_counts$Freq|>na.omit()|>length()
+
+lit_rev_data
+```
+
+```{r}
+library(ggplot2)
+ggplot(data=antarctic_subset,aes(x=plating_even_briefer,y=total_number_of_genera))+geom_col()
+```
+
 use FUNGuildR package to make eliminate any non genus taxa
 ```{r}
 library(FUNGuildR)
@@ -60,5 +131,39 @@ for(i in 1:dim(genera_counts)[1]){
 
 ```{r}
 merged_taxonomy_df<-merge(genera_counts,funguild_results_df,by.x="ID",by.y="id",all.x=TRUE)
+merged_taxonomy_df.no_singletons<-merged_taxonomy_df[merged_taxonomy_df$Freq>1,]|>arrange(Freq)
+```
+
+```{r}
+merged_taxonomy_df.no_singletons<-merged_taxonomy_df[merged_taxonomy_df$Freq>4,]|>arrange(desc(Freq))
+
+ggplot(data=merged_taxonomy_df.no_singletons,aes(y=forcats::fct_reorder(dump_of_all_genera, Freq),x=Freq))+
+  geom_col()+
+  theme_bw()+
+  ylab("Genera appearing in at least 5 studies")+
+  xlab("Number of appearances")+
+  geom_text(aes(label=Freq),hjust=-.2,size=2)+
+  scale_x_continuous(expand = expansion(mult = c(0,.05)))
+
+table(merged_taxonomy_df$Freq)
+length(merged_taxonomy_df$Freq)
+```
+```{r}
+
+dump_of_all_plating_methods<-c()
+for(i in 1:dim(antarctic_subset)[1]){
+  
+  current_plating_vector<-(antarctic_subset$`Plating method`[i]|>str_split("\n"))[[1]]|> stri_remove_empty_na()|>str_trim()
+  dump_of_all_plating_methods<-c(dump_of_all_plating_methods,current_plating_vector)
+}
+
+antarctic_subset$`plating brief`<-antarctic_subset$`plating brief`|>factor(levels=c("Sprinkle","Suspension","Sprinkle and suspension","Suspension and pour plate","Unclear","Other"))
+
+ggplot(data=antarctic_subset,aes(x=Year,fill=`plating brief`))+
+  geom_histogram(binwidth=10)+
+  scale_fill_brewer(palette="Set1")+
+  xlab("Decade")+
+  ylab("# Studies")+
+  labs(fill="Culture Method")
 ```
 
