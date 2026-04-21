@@ -282,14 +282,12 @@ stations_map<-basemap(limits = -55,glaciers = FALSE,shapefiles="Antarctic",land.
   annotation_spatial(claims_sf,alpha=0, aes(linetype="Australian Antarctic Territory"))+
   scale_linetype_manual(values=line_assignments)+
   labs(fill="Ice-Free ACBR",color="Ice-Free ACBR",linetype=element_blank())+
-  legend_left(by = c("fill")) +
+  legend_left(by = c("fill"))+
   legend_left(by=c("color"))+
   legend_bottom(by = "linetype")+
-  theme(legend.text = element_text(size=8))+
-  #legend_style(size = 5,by="fill",)+
-  #legend_style(size = 5,by="color")+
   theme(legend.text = element_text(size=8))
 stations_map
+ggsave("map_showing_mawson_location.png",stations_map)
 
 ```
 
